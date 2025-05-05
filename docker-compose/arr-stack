@@ -1,0 +1,207 @@
+#---------------------------------------------------------------------#
+#     Homarr - A simple, yet powerful dashboard for your server.      #
+#---------------------------------------------------------------------#
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
+      - /media/arr/homarr/appdata:/appdata
+    environment:
+      - SECRET_ENCRYPTION_KEY=75eeb78739a85d654138cd2f19515dfc71107d9c85f33cb5e12178c97c933e45 # <--- can be generated with `openssl rand -hex 32`
+    ports:
+      - '7575:7575'
+
+############################
+# RADARR
+############################
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /media/arr/radarr/config:/config
+      - /mnt/zfs/Media/Movies:/movies #optional
+      - /mnt/zfs/Media/Torrent:/downloads #optional
+    restart: unless-stopped
+    ports:
+      - '7878:7878'
+    
+############################
+# SONARR
+############################
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /media/arr/sonarr/config:/config
+      - /mnt/zfs/Media/Shows:/tv #optional
+      - /mnt/zfs/Media/Torrent:/downloads #optional
+    restart: unless-stopped
+    ports:
+      - '8989:8989'
+    
+############################
+# PROWLARR
+############################
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /media/arr/prowlarr/config:/config
+    restart: unless-stopped
+    ports:
+      - '9696:9696'
+
+############################
+# BAZARR
+############################
+
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /media/arr/bazarr/config:/config
+      - /mnt/zfs/Media/Movies:/movies #optional
+      - /mnt/zfs/Media/Shows:/tv #optional
+    restart: unless-stopped
+    ports:
+      - '6767:6767'
+    
+############################
+# LIDARR
+############################
+
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /media/arr/lidarr/config:/config
+      - /media/arr/lidarr/music:/music #optional
+      - /media/arr/qbittorrent/downloads:/downloads #optional
+    restart: unless-stopped
+    ports:
+      - '8686:8686'
+    
+############################
+# READARR
+############################
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /media/arr/readarr/config:/config
+      - /media/arr/readarr/books:/books #optional
+      - /media/arr/qbittorrent/downloads:/downloads #optional
+    restart: unless-stopped
+    ports:
+      - '8787:8787'
+    
+############################
+# QBITTORRENT		
+############################
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    #network_mode: "service:gluetun"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - WEBUI_PORT=8080
+      - TORRENTING_PORT=6881
+    volumes:
+      - /media/arr/qbittorrent/config:/config
+      - /mnt/zfs/Media/Torrent:/downloads #optional
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+      - '6881:6881'
+    
+############################
+# JELLYSEER		
+############################
+
+  jellyseerr: 
+      image: ghcr.io/fallenbagel/jellyseerr:latest
+      container_name: jellyseerr 
+      hostname: jellyseerr 
+      environment: 
+        - TZ=America/Chicago 
+      ports: 
+        - 5055:5055 
+      volumes: 
+        - /media/arr/jellyseer/app/config:/config
+      restart: unless-stopped 
+      #depends_on: 
+      #  - sonarr 
+      #  - radarr 
+
+############################
+# JELLYFIN
+############################
+
+  jellyfin:
+      #image: lscr.io/linuxserver/jellyfin:latest
+      image: jellyfin/jellyfin:latest
+      #image: hotio/jellyfin:latest
+      container_name: jellyfin
+      #hostname: jellyfin
+      environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=America/Chicago 
+        #- DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel
+      #group_add:
+      #  - "108" # HW Acceleration
+      #  - "44"
+      devices:
+        - /dev/dri:/dev/dri # HW Acceleration
+      volumes:
+        - /media/arr/jellyfin/config:/config
+        - /mnt/elvynspace/Media/Movies:/data/movies
+        - /mnt/elvynspace/Media/Shows:/data/shows
+        - /mnt/elvynspace/Media/Anime/Movies:/data/anime/movies
+        - /mnt/elvynspace/Media/Anime/Shows:/data/anime/shows
+      ports:
+        - 8096:8096
+        - 8920:8920 #optional
+        - 7359:7359/udp #optional
+        - 1900:1900/udp #optional
+      restart: unless-stopped
