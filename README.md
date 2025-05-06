@@ -1,4 +1,4 @@
-# elvynprise
+# ELVYNPRISE
 Repository for my personal homelab setup, dubbed "Elvynprise".
 
 What is "Elvynprise?"
