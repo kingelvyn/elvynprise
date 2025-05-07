@@ -28,8 +28,8 @@ services:
       - TZ=America/Chicago
     volumes:
       - /media/arr/radarr/config:/config
-      - /mnt/zfs/Media/Movies:/movies #optional
-      - /mnt/zfs/Media/Torrent:/downloads #optional
+      - /mnt/elvynspace/data/media/movies:/movies #optional
+      - /mnt/elvynspace/data/torrents:/downloads #optional
     restart: unless-stopped
     ports:
       - '7878:7878'
@@ -48,8 +48,8 @@ services:
       - TZ=America/Chicago
     volumes:
       - /media/arr/sonarr/config:/config
-      - /mnt/zfs/Media/Shows:/tv #optional
-      - /mnt/zfs/Media/Torrent:/downloads #optional
+      - /mnt/elvynspace/data/media/shows:/tv #optional
+      - /mnt/elvynspace/data/torrents:/downloads #optional
     restart: unless-stopped
     ports:
       - '8989:8989'
@@ -86,8 +86,8 @@ services:
       - TZ=America/Chicago
     volumes:
       - /media/arr/bazarr/config:/config
-      - /mnt/zfs/Media/Movies:/movies #optional
-      - /mnt/zfs/Media/Shows:/tv #optional
+      - /mnt/elvynspace/data/media/movies:/movies #optional
+      - /mnt/elvynspace/data/media/shows:/tv #optional
     restart: unless-stopped
     ports:
       - '6767:6767'
@@ -106,8 +106,8 @@ services:
       - TZ=America/Chicago
     volumes:
       - /media/arr/lidarr/config:/config
-      - /media/arr/lidarr/music:/music #optional
-      - /media/arr/qbittorrent/downloads:/downloads #optional
+      - /mnt/elvynspace/data/media/music:/music #optional
+      - /mnt/elvynspace/data/torrents:/downloads #optional
     restart: unless-stopped
     ports:
       - '8686:8686'
@@ -126,8 +126,8 @@ services:
       - TZ=America/Chicago
     volumes:
       - /media/arr/readarr/config:/config
-      - /media/arr/readarr/books:/books #optional
-      - /media/arr/qbittorrent/downloads:/downloads #optional
+      - /mnt/elvynspace/data/media/books:/books #optional
+      - /mnt/elvynspace/data/torrents:/downloads #optional
     restart: unless-stopped
     ports:
       - '8787:8787'
@@ -148,7 +148,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /media/arr/qbittorrent/config:/config
-      - /mnt/zfs/Media/Torrent:/downloads #optional
+      - /mnt/elvynspace/data/torrents:/downloads #optional
     restart: unless-stopped
     ports:
       - '8080:8080'
@@ -178,27 +178,19 @@ services:
 ############################
 
   jellyfin:
-      #image: lscr.io/linuxserver/jellyfin:latest
       image: jellyfin/jellyfin:latest
-      #image: hotio/jellyfin:latest
       container_name: jellyfin
-      #hostname: jellyfin
       environment:
         - PUID=1000
         - PGID=1000
         - TZ=America/Chicago 
-        #- DOCKER_MODS=linuxserver/mods:jellyfin-opencl-intel
-      #group_add:
-      #  - "108" # HW Acceleration
-      #  - "44"
       devices:
         - /dev/dri:/dev/dri # HW Acceleration
       volumes:
         - /media/arr/jellyfin/config:/config
-        - /mnt/elvynspace/Media/Movies:/data/movies
-        - /mnt/elvynspace/Media/Shows:/data/shows
-        - /mnt/elvynspace/Media/Anime/Movies:/data/anime/movies
-        - /mnt/elvynspace/Media/Anime/Shows:/data/anime/shows
+        - /mnt/elvynspace/data/media/movies:/data/movies
+        - /mnt/elvynspace/data/media/shows:/data/shows
+        - /mnt/elvynspace/data/media/anime:/data/anime
       ports:
         - 8096:8096
         - 8920:8920 #optional
