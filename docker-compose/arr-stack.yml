@@ -1,4 +1,4 @@
-version: "3.92"
+version: "3.91"
 
 #---------------------------------------------------------------------#
 #     Homarr - A simple, yet powerful dashboard for your server.      #
@@ -33,7 +33,7 @@ services:
       - /media/arr/radarr/config:/config
       - /mnt/elvynspace/data/media/movies:/movies #optional
       - /mnt/elvynspace/data/media/anime-movies:/anime-movies #optional
-      - /mnt/elvynspace/data/torrents:/downloads #optional
+      - /mnt/elvynspace/data/downloads:/downloads #optional
     restart: unless-stopped
     ports:
       - '7878:7878'
@@ -54,7 +54,7 @@ services:
     volumes:
       - /media/arr/sonarr/config:/config
       - /mnt/elvynspace/data/media/shows:/tv #optional
-      - /mnt/elvynspace/data/torrents:/downloads #optional
+      - /mnt/elvynspace/data/downloads:/downloads #optional
     restart: unless-stopped
     ports:
       - '8989:8989'
@@ -75,7 +75,7 @@ services:
     volumes:
       - /media/arr/sonarr-anime/config:/config
       - /mnt/elvynspace/data/media/anime:/anime #optional
-      - /mnt/elvynspace/data/torrents:/downloads #optional
+      - /mnt/elvynspace/data/downloads:/downloads #optional
     restart: unless-stopped
     ports:
       - '9090:8989'
