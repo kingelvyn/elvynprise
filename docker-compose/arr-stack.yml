@@ -1,4 +1,4 @@
-version: "3.91"
+version: "3.92"
 
 #---------------------------------------------------------------------#
 #     Homarr - A simple, yet powerful dashboard for your server.      #
@@ -12,7 +12,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # Optional, only if you want docker integration
       - /media/arr/homarr/appdata:/appdata
     environment:
-      - SECRET_ENCRYPTION_KEY=75eeb78739a85d654138cd2f19515dfc71107d9c85f33cb5e12178c97c933e45 # <--- can be generated with `openssl rand -hex 32`
+      - SECRET_ENCRYPTION_KEY= # <--- can be generated with `openssl rand -hex 32`
     ports:
       - '7575:7575'
 
@@ -117,7 +117,7 @@ services:
       - TORRENTING_PORT=6881
     volumes:
       - /media/arr/qbittorrent/config:/config
-      - /mnt/elvynspace/data/torrents:/downloads #optional
+      - /mnt/elvynspace/data/downloads:/downloads #optional
     restart: unless-stopped
     ports:
       - '8080:8080'
@@ -125,23 +125,31 @@ services:
 
     
 ############################
-# JELLYSEER		
+# JELLYSEER	/ SEERR	
 ############################
 
-  jellyseerr: 
-      image: ghcr.io/fallenbagel/jellyseerr:latest
-      container_name: jellyseerr 
-      hostname: jellyseerr 
-      environment: 
-        - TZ=America/Chicago 
-      ports: 
-        - 5055:5055 
-      volumes: 
-        - /media/arr/jellyseer/app/config:/app/config
-      restart: unless-stopped 
-      depends_on: 
-        - sonarr 
-        - radarr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    environment:
+      - LOG_LEVEL=debug
+      - TZ=America/Chicago
+      - PORT=5055 #optional
+    ports:
+      - 5055:5055
+    volumes:
+      - /media/arr/seerr/app/config:/app/config
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+    restart: unless-stopped
+    depends_on:
+      - radarr
+      - sonarr
 
 
 ############################
@@ -172,6 +180,5 @@ services:
         - 7359:7359/udp #optional
         - 1900:1900/udp #optional
       restart: unless-stopped
-
 
 
